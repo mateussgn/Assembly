@@ -1,6 +1,10 @@
 org 0x7e00
 jmp 0x0000:start
-pos times 90 db 0;
+
+pos times 90 db 1;
+frase1 db 'Digite a linha', 10
+frase2 db 'Digite a coluna', 10
+pulalinha db ' ',10
 var resb 0;
 
 start:
@@ -8,19 +12,61 @@ start:
     mov ds, ax
     mov es, ax
 
-    mov dx, 10
-    call inserirBomba
-
-    mov dx, 15
-    call inserirBomba
-
-    mov dx, 0
-    call inserirBomba
-
     call config_tela
-    call printarMapa
+    call printarTela
+
+    .loopinitial:
+        call printarMapa
+        call interacao
+        call inserirBomba
+
+        jmp .loopinitial
 
 done:
+
+interacao:
+    mov si, pulalinha
+    call digite
+
+    mov si, frase1
+    call digite
+
+    call fazer_leitura  ;bl vai receber a linha
+    mov bl, al
+
+    mov si, pulalinha
+    call digite
+
+    mov si, frase2
+    call digite  ;bh vai receber a coluna
+
+    call fazer_leitura
+    mov bh, al
+
+    add bl, 48  ;conversao do caracter em numero
+    add bh, 48
+
+    mov al, 9
+    mul bl  ;multiplica por 9 e transforma em unico valor
+    add bl, bh
+
+    mov [var], bl
+    mov dx,[var] ;dx armazena a posicao em inteiro da posicao do jogador
+
+ret
+
+digite:
+    lodsb
+	cmp al, 10
+	je .exit
+
+	mov ah, 0xe
+	int 10h
+
+    jmp digite
+    .exit:
+ret
+
 
 inserirBomba:
     mov si, pos
@@ -49,6 +95,31 @@ config_tela:
     mov bl, 1h      ;Cor desejada //  azul
     int 10h
 
+ret
+
+limpartela:
+    xor cx, cx
+    mov dx, cx
+    .loop1:
+        cmp cx, 200
+        je .endloop1
+
+        mov dx, 0       
+        .loop2:
+            cmp dx, 320
+            je .endloop2
+
+            mov bh, 0
+            mov ah, 0ch
+            mov al, 0xf
+
+            int 13h
+
+            inc dx
+        .endloop2:
+        inc cx
+        jmp .loop1
+    .endloop1:
 ret
 
 printarTela:
