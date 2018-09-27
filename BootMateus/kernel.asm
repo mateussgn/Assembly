@@ -1,6 +1,8 @@
 org 0x7e00
 jmp 0x0000:start
 
+pos times 90 db 30h ;o vazio vai ser o 0 em decimal
+
 bemVindo db 'Seja Bem Vindo!', 13
 iniciarJogo db '>Iniciar Jogo<', 13
 titulo db 'Campo Minado', 13
@@ -26,8 +28,8 @@ start:
 	call preencherCampos
 	call cabecalho
 	call tabuleiroInicial
-	call gameOver
-	call menu
+	;call gameOver
+	;call menu
 
 	
 done:
@@ -60,10 +62,10 @@ tabuleiroInicial:
 		mov al, 0xf ;cor
 		call desenharPixel	
 		inc dx
-		cmp dx, 187
+		cmp dx, 171
 		jne desenhaColuna
 	add cx, 16
-	cmp cx, 251
+	cmp cx, 267
 	jne coluna
 	;montando linhas
 	mov dx, 27
@@ -74,10 +76,10 @@ tabuleiroInicial:
 		call desenharPixel
 		int 10h	
 		inc cx
-		cmp cx, 235
+		cmp cx, 251
 		jne desenhaLinha
 	add dx, 16
-	cmp dx, 203
+	cmp dx, 187
 	jne linha
 ret
 
@@ -96,10 +98,10 @@ preencherCampos:
 			call setarCursor
 			call escreverNaTela
 			add dl, 2
-			cmp dl, 30
+			cmp dl, 32
 			jne linhaCampo;
 	add dh, 2
-	cmp dh, 24
+	cmp dh, 22
 	jne colunaCampo
 ret
 
